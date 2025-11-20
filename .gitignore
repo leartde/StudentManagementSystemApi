@@ -1,0 +1,67 @@
+# Build results
+bin/
+obj/
+out/
+
+# Rider
+.idea/
+*.sln.iml
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# ASP.NET publish output
+wwwroot/
+*.db
+*.db-wal
+*.db-shm
+
+# Logs
+*.log
+logs/
+
+# User-specific files
+*.userprefs
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Cache / temp
+*.tmp
+*.temp
+*.bak
+*.pid
+*.svclog
+*.psess
+*.vsp
+*.vspx
+
+# Configuration
+appsettings.Development.json
+appsettings.Local.json
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# Docker
+docker-compose.override.yml
+
+# Env files
+*.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
