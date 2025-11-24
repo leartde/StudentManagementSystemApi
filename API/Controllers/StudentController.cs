@@ -35,10 +35,17 @@ public class StudentController : ApiController
     return Ok(studentToAdd);
   }
 
+  [HttpPut("{id}")]
+  public async Task<IActionResult> UpdateStudent(int id, UpdateStudentDto studentDto, CancellationToken token)
+  {
+    var studentToUpdate = await _studentService.UpdateStudentAsync(id, studentDto, token);
+    return Ok(studentToUpdate);
+  }
+
   [HttpDelete]
   public async Task<IActionResult> DeleteStudent(int id, CancellationToken token)
   {
     await _studentService.DeleteStudentAsync(id, token);
-    return Ok();
+    return Ok($"Student with id: {id} successfully deleted.");
   }
 }

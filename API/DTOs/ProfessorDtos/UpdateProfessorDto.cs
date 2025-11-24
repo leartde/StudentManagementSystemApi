@@ -2,10 +2,10 @@
 
 namespace API.DTOs.ProfessorDtos;
 
-public class AddProfessorDto
+public class UpdateProfessorDto
 {
   public string FirstName { get; set; } = string.Empty;
   public string LastName { get; set; } = string.Empty;
   public string Email { get; set; } = string.Empty;
-  public AddContactInfoDto? ContactInfo { get; set; }
+  public UpdateContactInfoDto? ContactInfo { get; set; }
 }

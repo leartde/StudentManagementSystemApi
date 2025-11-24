@@ -20,7 +20,7 @@ public class StudentService
     CancellationToken token)
   {
     var students = _context.Students
-      .Filter(parameters.MinAverageGrade)
+      .Filter(parameters.MinAverageGrade, parameters.FieldOfStudy)
       .Search(parameters.SearchTerm)
       .Sort(parameters.OrderBy)
       .Skip((parameters.PageNumber - 1) * parameters.PageSize)
@@ -28,33 +28,67 @@ public class StudentService
       .Include(s => s.ContactInfo)
       .AsNoTracking();
 
-    return await students.Select(s => s.ToDto()).ToListAsync(cancellationToken: token);
+    return await students.Select(s => s.ToDto()).ToListAsync(token);
   }
 
   public async Task<ViewStudentDto> GetStudentAsync(int id, CancellationToken token)
   {
-    var student = await _context.Students.Where(s => s.Id == id)
+    var student = await _context.Students
       .Include(s => s.ContactInfo)
       .AsNoTracking()
-      .SingleOrDefaultAsync(cancellationToken: token);
+      .SingleOrDefaultAsync(s => s.Id == id, token);
     if (student is null) throw new Exception($"Student with id:{id} not found");
     return student.ToDto();
   }
 
   public async Task<ViewStudentDto> CreateStudentAsync(AddStudentDto studentDto, CancellationToken token)
   {
+    var publicId = await GeneratePublicIdAsync(studentDto.RegistrationYear);
     var student = studentDto.ToEntity();
-    await _context.Students.AddAsync(student, cancellationToken: token);
-    await _context.SaveChangesAsync(cancellationToken: token);
+    student.PublicId = publicId;
+    await _context.Students.AddAsync(student, token);
+    await _context.SaveChangesAsync(token);
+    return student.ToDto();
+  }
+
+  public async Task<ViewStudentDto> UpdateStudentAsync(int id, UpdateStudentDto studentDto, CancellationToken token)
+  {
+    var student = await _context.Students
+      .Include(s => s.ContactInfo)
+      .SingleOrDefaultAsync(s => s.Id == id, token);
+    if (student is null)
+    {
+      throw new Exception($"Student with id:{id} not found");
+    }
+
+    studentDto.ToEntity(student);
+    await _context.SaveChangesAsync(token);
     return student.ToDto();
   }
 
   public async Task DeleteStudentAsync(int id, CancellationToken token)
   {
-    var student = await _context.Students.FindAsync(id);
+    var student = await _context.Students.FindAsync(id, token);
     if (student is null) throw new Exception($"Student with id:{id} not found");
     student.IsDeleted = true;
-    _context.Students.Update(student);
-    await _context.SaveChangesAsync(cancellationToken: token);
+    student.DeletedAt = DateTime.UtcNow;
+    await _context.SaveChangesAsync(token);
+  }
+
+  private async Task<string> GeneratePublicIdAsync(int registrationYear)
+  {
+    string publicId;
+    bool isUnique;
+    var random = new Random();
+    do
+    {
+      var yearPart = (registrationYear % 100).ToString("00");
+      var nextYearPart = ((registrationYear + 1) % 100).ToString("00");
+      var randomPart = random.Next(0, 100000).ToString("00000");
+      publicId = $"{yearPart}{nextYearPart}{randomPart}";
+      isUnique = !await _context.Students.AnyAsync(s => s.PublicId == publicId);
+    } while (!isUnique);
+
+    return publicId;
   }
 }

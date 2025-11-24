@@ -20,6 +20,7 @@ public static class ContactInfoMapper
       Nationality = entity.Nationality,
       CreatedAt = entity.CreatedAt,
       UpdatedAt = entity.UpdatedAt,
+      DeletedAt = entity.DeletedAt
     };
   }
 
@@ -34,7 +35,20 @@ public static class ContactInfoMapper
       PhoneNumber = dto.PhoneNumber,
       PrivateEmail = dto.PrivateEmail,
       Ethnicity = dto.Ethnicity,
-      Nationality = dto.Nationality,
+      Nationality = dto.Nationality
     };
+  }
+
+  public static void ToEntity(this UpdateContactInfoDto dto, ContactInfo entity)
+  {
+    entity.Country = dto.Country;
+    entity.Residence = dto.Residence;
+    entity.Street = dto.Street;
+    entity.ZipCode = dto.ZipCode;
+    entity.PhoneNumber = dto.PhoneNumber;
+    entity.PrivateEmail = dto.PrivateEmail;
+    entity.Ethnicity = dto.Ethnicity;
+    entity.Nationality = dto.Nationality;
+    entity.UpdatedAt = DateTime.UtcNow;
   }
 }

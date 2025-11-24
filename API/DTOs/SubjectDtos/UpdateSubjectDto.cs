@@ -1,14 +1,13 @@
 ﻿using API.Enums;
 
-namespace API.Models;
+namespace API.DTOs.SubjectDtos;
 
-public class Subject : BaseClass
+public class UpdateSubjectDto
 {
+  public int ProfessorId { get; set; }
   public string Code { get; set; } = string.Empty;
   public string Title { get; set; } = string.Empty;
   public short ECTS { get; set; }
   public bool IsObligatory { get; set; }
   public FieldOfStudy FieldOfStudy { get; set; }
-  public Professor? Professor { get; set; }
-  public int ProfessorId { get; set; }
 }

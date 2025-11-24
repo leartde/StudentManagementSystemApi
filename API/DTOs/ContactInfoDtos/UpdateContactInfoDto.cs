@@ -1,8 +1,7 @@
 ﻿namespace API.DTOs.ContactInfoDtos;
 
-public class ViewContactInfoDto
+public class UpdateContactInfoDto
 {
-  public int Id { get; set; }
   public string Country { get; set; } = string.Empty;
   public string Residence { get; set; } = string.Empty;
   public string Street { get; set; } = string.Empty;
@@ -11,7 +10,4 @@ public class ViewContactInfoDto
   public string PrivateEmail { get; set; } = string.Empty;
   public string Ethnicity { get; set; } = string.Empty;
   public string Nationality { get; set; } = string.Empty;
-  public DateTime CreatedAt { get; set; }
-  public DateTime? UpdatedAt { get; set; }
-  public DateTime? DeletedAt { get; set; }
 }

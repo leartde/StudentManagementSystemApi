@@ -1,8 +1,8 @@
 ﻿namespace API.DTOs.GradeDtos;
 
-public class AddGrade 
+public class AddGradeDto
 {
   public int StudentId { get; set; }
   public int SubjectId { get; set; }
-  public short Mark { get; set; }
+  public byte Mark { get; set; }
 }

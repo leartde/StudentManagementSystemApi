@@ -2,8 +2,9 @@
 
 namespace API.DTOs.SubjectDtos;
 
-public class AddSubjectDto 
+public class AddSubjectDto
 {
+  public int ProfessorId { get; set; }
   public string Code { get; set; } = string.Empty;
   public string Title { get; set; } = string.Empty;
   public short ECTS { get; set; }

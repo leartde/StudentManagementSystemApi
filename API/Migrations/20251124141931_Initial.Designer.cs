@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251121151743_Initial")]
+    [Migration("20251124141931_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -38,6 +38,9 @@ namespace API.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Ethnicity")
@@ -67,7 +70,7 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ZipCode")
@@ -90,13 +93,16 @@ namespace API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("GradeStatus")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<short>("Mark")
+                    b.Property<byte>("Mark")
                         .HasColumnType("smallint");
 
                     b.Property<int>("StudentId")
@@ -105,7 +111,7 @@ namespace API.Migrations
                     b.Property<int>("SubjectId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -131,6 +137,9 @@ namespace API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -146,7 +155,7 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -177,6 +186,9 @@ namespace API.Migrations
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("FieldOfStudy")
                         .HasColumnType("integer");
 
@@ -198,10 +210,13 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("RegistrationYear")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -226,6 +241,9 @@ namespace API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<short>("ECTS")
                         .HasColumnType("smallint");
 
@@ -238,31 +256,21 @@ namespace API.Migrations
                     b.Property<bool>("IsObligatory")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("ProfessorId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProfessorId");
+
                     b.ToTable("Subjects");
-                });
-
-            modelBuilder.Entity("ProfessorSubject", b =>
-                {
-                    b.Property<int>("ProfessorsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SubjectsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ProfessorsId", "SubjectsId");
-
-                    b.HasIndex("SubjectsId");
-
-                    b.ToTable("ProfessorSubject");
                 });
 
             modelBuilder.Entity("API.Models.Grade", b =>
@@ -304,19 +312,20 @@ namespace API.Migrations
                     b.Navigation("ContactInfo");
                 });
 
-            modelBuilder.Entity("ProfessorSubject", b =>
+            modelBuilder.Entity("API.Models.Subject", b =>
                 {
-                    b.HasOne("API.Models.Professor", null)
-                        .WithMany()
-                        .HasForeignKey("ProfessorsId")
+                    b.HasOne("API.Models.Professor", "Professor")
+                        .WithMany("Subjects")
+                        .HasForeignKey("ProfessorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Models.Subject", null)
-                        .WithMany()
-                        .HasForeignKey("SubjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Professor");
+                });
+
+            modelBuilder.Entity("API.Models.Professor", b =>
+                {
+                    b.Navigation("Subjects");
                 });
 
             modelBuilder.Entity("API.Models.Student", b =>

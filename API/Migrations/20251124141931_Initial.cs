@@ -27,32 +27,13 @@ namespace API.Migrations
                     Ethnicity = table.Column<string>(type: "text", nullable: false),
                     Nationality = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ContactInfos", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Subjects",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Code = table.Column<string>(type: "text", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    ECTS = table.Column<short>(type: "smallint", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
-                    FieldOfStudy = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Subjects", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,8 +47,9 @@ namespace API.Migrations
                     Email = table.Column<string>(type: "text", nullable: false),
                     ContactInfoId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -88,6 +70,7 @@ namespace API.Migrations
                     PublicId = table.Column<string>(type: "text", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
+                    RegistrationYear = table.Column<int>(type: "integer", nullable: false),
                     Gender = table.Column<int>(type: "integer", nullable: false),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     Birthplace = table.Column<string>(type: "text", nullable: false),
@@ -95,8 +78,9 @@ namespace API.Migrations
                     Status = table.Column<int>(type: "integer", nullable: false),
                     ContactInfoId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -110,25 +94,29 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProfessorSubject",
+                name: "Subjects",
                 columns: table => new
                 {
-                    ProfessorsId = table.Column<int>(type: "integer", nullable: false),
-                    SubjectsId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Code = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    ECTS = table.Column<short>(type: "smallint", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    FieldOfStudy = table.Column<int>(type: "integer", nullable: false),
+                    ProfessorId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfessorSubject", x => new { x.ProfessorsId, x.SubjectsId });
+                    table.PrimaryKey("PK_Subjects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProfessorSubject_Professors_ProfessorsId",
-                        column: x => x.ProfessorsId,
+                        name: "FK_Subjects_Professors_ProfessorId",
+                        column: x => x.ProfessorId,
                         principalTable: "Professors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProfessorSubject_Subjects_SubjectsId",
-                        column: x => x.SubjectsId,
-                        principalTable: "Subjects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -141,11 +129,12 @@ namespace API.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     StudentId = table.Column<int>(type: "integer", nullable: false),
                     SubjectId = table.Column<int>(type: "integer", nullable: false),
-                    Mark = table.Column<short>(type: "smallint", nullable: false),
+                    Mark = table.Column<byte>(type: "smallint", nullable: false),
                     GradeStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -180,14 +169,14 @@ namespace API.Migrations
                 column: "ContactInfoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfessorSubject_SubjectsId",
-                table: "ProfessorSubject",
-                column: "SubjectsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Students_ContactInfoId",
                 table: "Students",
                 column: "ContactInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subjects_ProfessorId",
+                table: "Subjects",
+                column: "ProfessorId");
         }
 
         /// <inheritdoc />
@@ -197,16 +186,13 @@ namespace API.Migrations
                 name: "Grades");
 
             migrationBuilder.DropTable(
-                name: "ProfessorSubject");
-
-            migrationBuilder.DropTable(
                 name: "Students");
 
             migrationBuilder.DropTable(
-                name: "Professors");
+                name: "Subjects");
 
             migrationBuilder.DropTable(
-                name: "Subjects");
+                name: "Professors");
 
             migrationBuilder.DropTable(
                 name: "ContactInfos");

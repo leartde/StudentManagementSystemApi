@@ -1,4 +1,5 @@
 using API.Data;
+using API.Models;
 using API.Services;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -22,13 +23,18 @@ builder.Services.AddApiVersioning(options =>
 {
   options.ReportApiVersions = true;
   options.AssumeDefaultVersionWhenUnspecified = true;
- options.DefaultApiVersion = new ApiVersion(1, 0);
+  options.DefaultApiVersion = new ApiVersion(1, 0);
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
   options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<StudentService>();
+builder.Services.AddScoped<ProfessorService>();
+builder.Services.AddScoped<SubjectService>();
+builder.Services.AddScoped<GradeService>();
+
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -38,7 +44,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();
-  app.UseSwaggerUI(); 
+  app.UseSwaggerUI();
 }
 
 app.MapControllers();
