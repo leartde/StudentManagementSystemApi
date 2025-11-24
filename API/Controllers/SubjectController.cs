@@ -1,4 +1,5 @@
 ﻿using API.DTOs.SubjectDtos;
+using API.RequestFeatures;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,9 +15,9 @@ public class SubjectController : ApiController
   }
 
   [HttpGet]
-  public async Task<IActionResult> GetAllSubjects(CancellationToken token)
+  public async Task<IActionResult> GetAllSubjects([FromQuery] SubjectParameters parameters, CancellationToken token)
   {
-    var subjects = await _subjectService.GetAllSubjectsAsync(token);
+    var subjects = await _subjectService.GetAllSubjectsAsync(parameters, token);
     return Ok(subjects);
   }
 

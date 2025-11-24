@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.DTOs.ProfessorDtos;
 using API.Mappers;
+using API.RequestFeatures;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Services;
@@ -14,9 +15,11 @@ public class ProfessorService
     _context = context;
   }
 
-  public async Task<IEnumerable<ViewProfessorDto>> GetAllProfessorsAsync(CancellationToken token)
+  public async Task<IEnumerable<ViewProfessorDto>> GetAllProfessorsAsync(ProfessorParameters professorParameters,CancellationToken token)
   {
     var professors =  _context.Professors
+      .Skip((professorParameters.PageNumber - 1) * professorParameters.PageSize)
+      .Take(professorParameters.PageSize)
       .Include(p => p.ContactInfo)
       .Include(p => p.Subjects)
       .AsNoTracking();

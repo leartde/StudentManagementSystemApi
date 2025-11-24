@@ -1,4 +1,5 @@
 ﻿using API.DTOs.ProfessorDtos;
+using API.RequestFeatures;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,9 +15,9 @@ public class ProfessorController : ApiController
   }
 
   [HttpGet]
-  public async Task<IActionResult> GetAllProfessors(CancellationToken token)
+  public async Task<IActionResult> GetAllProfessors([FromQuery] ProfessorParameters parameters, CancellationToken token)
   {
-    var professors = await _professorService.GetAllProfessorsAsync(token);
+    var professors = await _professorService.GetAllProfessorsAsync(parameters, token);
     return Ok(professors);
   }
 

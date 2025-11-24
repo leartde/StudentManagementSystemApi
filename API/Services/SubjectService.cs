@@ -1,6 +1,8 @@
 ﻿using API.Data;
 using API.DTOs.SubjectDtos;
 using API.Mappers;
+using API.RequestFeatures;
+using API.Services.QueryExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Services;
@@ -14,9 +16,15 @@ public class SubjectService
     _context = context;
   }
 
-  public async Task<IEnumerable<ViewSubjectDto>> GetAllSubjectsAsync(CancellationToken token)
+  public async Task<IEnumerable<ViewSubjectDto>> GetAllSubjectsAsync(SubjectParameters subjectParameters,CancellationToken token)
   {
     var subjects =  _context.Subjects
+      .Filter(subjectParameters.ProfessorId, subjectParameters.FieldOfStudy)
+      .Search(subjectParameters.SearchTerm)
+      .Sort(subjectParameters.OrderBy)
+      .Skip((subjectParameters.PageNumber - 1) * subjectParameters.PageSize)
+      .Take(subjectParameters.PageSize)
+      .Include(s => s.Professor)
         .AsNoTracking();
     return await subjects.Select(s => s.ToDto()).ToListAsync(token);
   }
@@ -25,6 +33,7 @@ public class SubjectService
   {
     var subject = await _context.Subjects
       .AsNoTracking()
+      .Include(s => s.Professor)
       .FirstOrDefaultAsync(s => s.Id == id, token);
     if (subject is null)
     {

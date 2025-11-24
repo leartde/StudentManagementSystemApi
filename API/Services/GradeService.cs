@@ -21,8 +21,8 @@ public class GradeService
     var grades = _context.Grades
       .Filter(gradeParameters.StudentId, gradeParameters.SubjectId)
       .Sort(gradeParameters.OrderBy)
-      .Take(gradeParameters.PageSize)
       .Skip((gradeParameters.PageNumber - 1) * gradeParameters.PageSize)
+      .Take(gradeParameters.PageSize)
       .Include(g => g.Student)
       .Include(g => g.Subject)
       .AsNoTracking();
