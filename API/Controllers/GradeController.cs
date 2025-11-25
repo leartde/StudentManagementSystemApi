@@ -1,4 +1,5 @@
-﻿using API.DTOs.GradeDtos;
+﻿using System.Text.Json;
+using API.DTOs.GradeDtos;
 using API.RequestFeatures;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +16,10 @@ public class GradeController : ApiController
   }
 
   [HttpGet]
-  public async Task<IActionResult> GetAllGrades([FromQuery] GradeParameters gradeParameters,CancellationToken token)
+  public async Task<IActionResult> GetAllGrades([FromQuery] GradeParameters gradeParameters, CancellationToken token)
   {
     var grades = await _gradeService.GetAllGradesAsync(gradeParameters, token);
+    Response.Headers["X-Pagination"] = JsonSerializer.Serialize(grades.MetaData);
     return Ok(grades);
   }
 

@@ -1,4 +1,5 @@
-﻿using API.DTOs.SubjectDtos;
+﻿using System.Text.Json;
+using API.DTOs.SubjectDtos;
 using API.RequestFeatures;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ namespace API.Controllers;
 
 public class SubjectController : ApiController
 {
-  private SubjectService _subjectService;
+  private readonly SubjectService _subjectService;
 
   public SubjectController(SubjectService subjectService)
   {
@@ -18,6 +19,7 @@ public class SubjectController : ApiController
   public async Task<IActionResult> GetAllSubjects([FromQuery] SubjectParameters parameters, CancellationToken token)
   {
     var subjects = await _subjectService.GetAllSubjectsAsync(parameters, token);
+    Response.Headers["X-Pagination"] = JsonSerializer.Serialize(subjects.MetaData);
     return Ok(subjects);
   }
 

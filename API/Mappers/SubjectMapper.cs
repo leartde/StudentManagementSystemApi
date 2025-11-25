@@ -10,7 +10,7 @@ public static class SubjectMapper
     return new ViewSubjectDto
     {
       Id = entity.Id,
-      ProfessorId = entity.ProfessorId ,
+      ProfessorId = entity.ProfessorId,
       Code = entity.Code,
       Title = entity.Title,
       ECTS = entity.ECTS,
@@ -32,7 +32,7 @@ public static class SubjectMapper
       Title = dto.Title,
       ECTS = dto.ECTS,
       IsObligatory = dto.IsObligatory,
-      FieldOfStudy = dto.FieldOfStudy,
+      FieldOfStudy = dto.FieldOfStudy
     };
   }
 

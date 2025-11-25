@@ -10,7 +10,7 @@ public static class SubjectExtensions
   public static IQueryable<Subject> Search(this IQueryable<Subject> subjects, string? searchTerm)
   {
     if (string.IsNullOrEmpty(searchTerm)) return subjects;
-    var lowerSearch = searchTerm.ToLower();
+    string lowerSearch = searchTerm.ToLower();
     subjects = subjects.Where(s => s.Title.ToLower().Contains(lowerSearch) || s.Code.ToLower().Contains(lowerSearch));
     return subjects;
   }
@@ -18,15 +18,9 @@ public static class SubjectExtensions
   public static IQueryable<Subject> Filter(this IQueryable<Subject> subjects, int? professorId,
     FieldOfStudy? fieldOfStudy)
   {
-    if (professorId != null)
-    {
-      subjects = subjects.Where(s => s.ProfessorId == professorId);
-    }
+    if (professorId != null) subjects = subjects.Where(s => s.ProfessorId == professorId);
 
-    if (fieldOfStudy != null)
-    {
-      subjects = subjects.Where(s => s.FieldOfStudy == fieldOfStudy);
-    }
+    if (fieldOfStudy != null) subjects = subjects.Where(s => s.FieldOfStudy == fieldOfStudy);
 
     return subjects;
   }

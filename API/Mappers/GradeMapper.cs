@@ -33,6 +33,6 @@ public static class GradeMapper
   public static void ToEntity(this UpdateGradeDto dto, Grade entity)
   {
     entity.Mark = dto.Mark;
-    entity.UpdatedAt = DateTime.UtcNow;  
+    entity.UpdatedAt = DateTime.UtcNow;
   }
 }

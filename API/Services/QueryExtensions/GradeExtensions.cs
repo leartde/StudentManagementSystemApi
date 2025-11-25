@@ -8,15 +8,9 @@ public static class GradeExtensions
 {
   public static IQueryable<Grade> Filter(this IQueryable<Grade> grades, int? studentId, int? subjectId)
   {
-    if (studentId != null)
-    {
-      grades = grades.Where(g => g.StudentId == studentId);
-    }
+    if (studentId != null) grades = grades.Where(g => g.StudentId == studentId);
 
-    if (subjectId != null)
-    {
-      grades = grades.Where(g => g.SubjectId == subjectId);
-    }
+    if (subjectId != null) grades = grades.Where(g => g.SubjectId == subjectId);
 
     return grades;
   }
@@ -31,14 +25,14 @@ public static class GradeExtensions
     switch (propertyName.ToLower())
     {
       case "mark":
-      
+
         return isDescending
           ? grades.OrderByDescending(g => g.Mark)
           : grades.OrderBy(g => g.Mark);
-      case "student" :
+      case "student":
         return isDescending
           ? grades.OrderByDescending(g => g.Student)
-          : grades.OrderBy(g => g .Student);
+          : grades.OrderBy(g => g.Student);
       case "subject":
         return isDescending
           ? grades.OrderByDescending(g => g.Subject)
@@ -54,7 +48,7 @@ public static class GradeExtensions
         var parameter = Expression.Parameter(typeof(Grade), "x");
         var propertyAccess = Expression.Property(parameter, objectProperty);
         var orderByExp = Expression.Lambda(propertyAccess, parameter);
-        
+
         string method = isDescending ? "OrderByDescending" : "OrderBy";
         var orderByCall = Expression.Call(
           typeof(Queryable),

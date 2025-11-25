@@ -1,6 +1,4 @@
-﻿using API.Enums;
-
-namespace API.DTOs.SubjectDtos;
+﻿namespace API.DTOs.SubjectDtos;
 
 public class ViewSubjectDto
 {

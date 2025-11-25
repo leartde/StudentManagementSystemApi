@@ -40,5 +40,6 @@ public static class ProfessorMapper
     entity.UpdatedAt = DateTime.UtcNow;
     if (dto.ContactInfo == null) return;
     entity.ContactInfo = new ContactInfo();
-    dto.ContactInfo.ToEntity(entity.ContactInfo);  }
+    dto.ContactInfo.ToEntity(entity.ContactInfo);
+  }
 }

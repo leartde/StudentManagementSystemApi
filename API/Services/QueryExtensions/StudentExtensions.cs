@@ -11,7 +11,8 @@ public static class StudentExtensions
     FieldOfStudy? fieldOfStudy)
   {
     if (minAvgGrade != null)
-      students = students.Where(s => s.Grades != null && s.Grades.Any() && s.Grades.Average(g => g.Mark) >= minAvgGrade);
+      students = students.Where(s =>
+        s.Grades != null && s.Grades.Any() && s.Grades.Average(g => g.Mark) >= minAvgGrade);
 
     if (fieldOfStudy != null) students = students.Where(s => s.FieldOfStudy == fieldOfStudy);
 

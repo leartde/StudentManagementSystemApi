@@ -1,4 +1,5 @@
-﻿using API.DTOs.StudentDtos;
+﻿using System.Text.Json;
+using API.DTOs.StudentDtos;
 using API.RequestFeatures;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ public class StudentController : ApiController
   public async Task<IActionResult> GetStudents([FromQuery] StudentParameters parameters, CancellationToken token)
   {
     var students = await _studentService.GetAllStudentsAsync(parameters, token);
+    Response.Headers["X-Pagination"] = JsonSerializer.Serialize(students.MetaData);
     return Ok(students);
   }
 

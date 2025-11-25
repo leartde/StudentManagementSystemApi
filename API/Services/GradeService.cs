@@ -16,7 +16,7 @@ public class GradeService
     _context = context;
   }
 
-  public async Task<IEnumerable<ViewGradeDto>> GetAllGradesAsync(GradeParameters gradeParameters, CancellationToken token)
+  public async Task<PagedList<ViewGradeDto>> GetAllGradesAsync(GradeParameters gradeParameters, CancellationToken token)
   {
     var grades = _context.Grades
       .Filter(gradeParameters.StudentId, gradeParameters.SubjectId)
@@ -26,7 +26,13 @@ public class GradeService
       .Include(g => g.Student)
       .Include(g => g.Subject)
       .AsNoTracking();
-    return await grades.Select(g => g.ToDto()).ToListAsync(token);
+    int count = _context.Grades
+      .Filter(gradeParameters.StudentId, gradeParameters.SubjectId)
+      .AsNoTracking()
+      .Count();
+    var gradeDtos = await grades.Select(g => g.ToDto()).ToListAsync(token);
+    
+    return new PagedList<ViewGradeDto>(gradeDtos, count, gradeParameters.PageNumber, gradeParameters.PageSize);
   }
 
   public async Task<ViewGradeDto> GetGradeAsync(int id, CancellationToken token)
@@ -36,10 +42,7 @@ public class GradeService
       .Include(g => g.Subject)
       .AsNoTracking()
       .SingleOrDefaultAsync(g => g.Id == id, token);
-    if (grade is null)
-    {
-      throw new Exception($"Grade with id: {id} not found.");
-    }
+    if (grade is null) throw new Exception($"Grade with id: {id} not found.");
     return grade.ToDto();
   }
 
@@ -54,10 +57,7 @@ public class GradeService
   public async Task<ViewGradeDto> UpdateGradeAsync(int id, UpdateGradeDto dto, CancellationToken token)
   {
     var grade = await _context.Grades.FindAsync(id, token);
-    if (grade is null)
-    {
-      throw new Exception($"Grade with id: {id} not found.");
-    }
+    if (grade is null) throw new Exception($"Grade with id: {id} not found.");
     dto.ToEntity(grade);
     await _context.SaveChangesAsync(token);
     return grade.ToDto();
@@ -66,10 +66,7 @@ public class GradeService
   public async Task DeleteGradeAsync(int id, CancellationToken token)
   {
     var grade = await _context.Grades.FindAsync(id, token);
-    if (grade is null)
-    {
-      throw new Exception($"Grade with id: {id} not found.");
-    }
+    if (grade is null) throw new Exception($"Grade with id: {id} not found.");
     grade.IsDeleted = true;
     grade.DeletedAt = DateTime.UtcNow;
     await _context.SaveChangesAsync(token);

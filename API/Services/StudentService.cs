@@ -1,8 +1,10 @@
 ﻿using API.Data;
 using API.DTOs.StudentDtos;
 using API.Mappers;
+using API.Models;
 using API.RequestFeatures;
 using API.Services.QueryExtensions;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Services;
@@ -10,25 +12,42 @@ namespace API.Services;
 public class StudentService
 {
   private readonly ApplicationDbContext _context;
-
-  public StudentService(ApplicationDbContext context)
+  private readonly RedisCacheService _cache;
+  public StudentService(ApplicationDbContext context, RedisCacheService cache)
   {
     _context = context;
+    _cache = cache;
   }
 
-  public async Task<IEnumerable<ViewStudentDto>> GetAllStudentsAsync(StudentParameters parameters,
+  public async Task<PagedList<ViewStudentDto>> GetAllStudentsAsync(StudentParameters studentParameters,
     CancellationToken token)
   {
-    var students = _context.Students
-      .Filter(parameters.MinAverageGrade, parameters.FieldOfStudy)
-      .Search(parameters.SearchTerm)
-      .Sort(parameters.OrderBy)
-      .Skip((parameters.PageNumber - 1) * parameters.PageSize)
-      .Take(parameters.PageSize)
-      .Include(s => s.ContactInfo)
-      .AsNoTracking();
+    var cached = _cache.GetData<IEnumerable<Student>>("students");
+    IEnumerable<Student> students;
+    if (cached is not null)
+    {
+      students = cached;
+    }
+    else
+    {
+      students = await _context.Students
+        .Include(s => s.ContactInfo)
+        .AsNoTracking()
+        .ToListAsync(token);
+      _cache.SetData("students", students, 5);
+    }
 
-    return await students.Select(s => s.ToDto()).ToListAsync(token);
+    var filteredStudents = students.AsQueryable()
+      .Filter(studentParameters.MinAverageGrade, studentParameters.FieldOfStudy)
+      .Search(studentParameters.SearchTerm)
+      .Sort(studentParameters.OrderBy);
+    var count = filteredStudents.Count();
+    var pagedStudents = filteredStudents
+      .Skip((studentParameters.PageNumber - 1) * studentParameters.PageSize)
+      .Take(studentParameters.PageSize);
+    var studentDtos =  pagedStudents.Select(s => s.ToDto()).ToList();
+    
+    return new PagedList<ViewStudentDto>(studentDtos, count, studentParameters.PageNumber, studentParameters.PageSize);
   }
 
   public async Task<ViewStudentDto> GetStudentAsync(int id, CancellationToken token)
@@ -43,7 +62,7 @@ public class StudentService
 
   public async Task<ViewStudentDto> CreateStudentAsync(AddStudentDto studentDto, CancellationToken token)
   {
-    var publicId = await GeneratePublicIdAsync(studentDto.RegistrationYear);
+    string publicId = await GeneratePublicIdAsync(studentDto.RegistrationYear);
     var student = studentDto.ToEntity();
     student.PublicId = publicId;
     await _context.Students.AddAsync(student, token);
@@ -56,10 +75,7 @@ public class StudentService
     var student = await _context.Students
       .Include(s => s.ContactInfo)
       .SingleOrDefaultAsync(s => s.Id == id, token);
-    if (student is null)
-    {
-      throw new Exception($"Student with id:{id} not found");
-    }
+    if (student is null) throw new Exception($"Student with id:{id} not found");
 
     studentDto.ToEntity(student);
     await _context.SaveChangesAsync(token);
