@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
-using API.DTOs.SubjectDtos;
-using API.RequestFeatures;
 using API.Services;
+using API.Shared.DTOs.SubjectDtos;
+using API.Shared.RequestFeatures;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -18,30 +18,30 @@ public class SubjectController : ApiController
   [HttpGet]
   public async Task<IActionResult> GetAllSubjects([FromQuery] SubjectParameters parameters, CancellationToken token)
   {
-    var subjects = await _subjectService.GetAllSubjectsAsync(parameters, token);
-    Response.Headers["X-Pagination"] = JsonSerializer.Serialize(subjects.MetaData);
-    return Ok(subjects);
+    var result = await _subjectService.GetAllSubjectsAsync(parameters, token);
+    Response.Headers["X-Pagination"] = JsonSerializer.Serialize(result.Value.MetaData);
+    return Ok(result);
   }
 
   [HttpGet("{id}")]
   public async Task<IActionResult> GetSubject(int id, CancellationToken token)
   {
-    var subject = await _subjectService.GetSubjectAsync(id, token);
-    return Ok(subject);
+    var result = await _subjectService.GetSubjectAsync(id, token);
+    return Ok(result);
   }
 
   [HttpPost]
   public async Task<IActionResult> CreateSubject(AddSubjectDto subjectDto, CancellationToken token)
   {
-    var subject = await _subjectService.CreateSubjectAsync(subjectDto, token);
-    return Ok(subject);
+    var result = await _subjectService.CreateSubjectAsync(subjectDto, token);
+    return Ok(result);
   }
 
   [HttpPut("{id}")]
   public async Task<IActionResult> UpdateSubject(int id, UpdateSubjectDto subjectDto, CancellationToken token)
   {
-    var subject = await _subjectService.UpdateSubjectAsync(id, subjectDto, token);
-    return Ok(subject);
+    var result = await _subjectService.UpdateSubjectAsync(id, subjectDto, token);
+    return Ok(result);
   }
 
   [HttpDelete("{id}")]

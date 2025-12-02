@@ -53,9 +53,6 @@ public static class ServiceCollectionExtensions
       options.Configuration = configuration.GetConnectionString("Redis");
       options.InstanceName = "StudentSystemCaching_";
     });
-    services.AddMemoryCache(options =>
-    {
-      options.SizeLimit = 1024 * 1024 * 100;
-    });
+    services.AddMemoryCache(options => { options.SizeLimit = 1024 * 1024 * 100; });
   }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
-using API.DTOs.ProfessorDtos;
-using API.RequestFeatures;
 using API.Services;
+using API.Shared.DTOs.ProfessorDtos;
+using API.Shared.RequestFeatures;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -18,30 +18,30 @@ public class ProfessorController : ApiController
   [HttpGet]
   public async Task<IActionResult> GetAllProfessors([FromQuery] ProfessorParameters parameters, CancellationToken token)
   {
-    var professors = await _professorService.GetAllProfessorsAsync(parameters, token);
-    Response.Headers["X-Pagination"] = JsonSerializer.Serialize(professors.MetaData);
-    return Ok(professors);
+    var result = await _professorService.GetAllProfessorsAsync(parameters, token);
+    Response.Headers["X-Pagination"] = JsonSerializer.Serialize(result.Value.MetaData);
+    return Ok(result);
   }
 
   [HttpGet("{id}")]
   public async Task<IActionResult> GetProfessor(int id, CancellationToken token)
   {
-    var professor = await _professorService.GetProfessorAsync(id, token);
-    return Ok(professor);
+    var result = await _professorService.GetProfessorAsync(id, token);
+    return Ok(result);
   }
 
   [HttpPost]
   public async Task<IActionResult> CreateProfessor(AddProfessorDto professorDto, CancellationToken token)
   {
-    var professor = await _professorService.CreateProfessorAsync(professorDto, token);
-    return Ok(professor);
+    var result = await _professorService.CreateProfessorAsync(professorDto, token);
+    return Ok(result);
   }
 
   [HttpPut("{id}")]
   public async Task<IActionResult> UpdateProfessor(int id, UpdateProfessorDto professorDto, CancellationToken token)
   {
-    var professor = await _professorService.UpdateProfessorAsync(id, professorDto, token);
-    return Ok(professor);
+    var result = await _professorService.UpdateProfessorAsync(id, professorDto, token);
+    return Ok(result);
   }
 
   [HttpDelete("{id}")]

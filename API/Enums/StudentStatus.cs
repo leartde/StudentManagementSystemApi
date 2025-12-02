@@ -2,6 +2,6 @@
 
 public enum StudentStatus
 {
-  Active,
-  Graduated
+  Active = 1,
+  Graduated = 2
 }

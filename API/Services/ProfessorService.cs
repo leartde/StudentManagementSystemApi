@@ -1,8 +1,10 @@
 ﻿using API.Data;
-using API.DTOs.ProfessorDtos;
-using API.Mappers;
-using API.RequestFeatures;
+using API.Models;
 using API.Services.QueryExtensions;
+using API.Shared.DTOs.ProfessorDtos;
+using API.Shared.Mappers;
+using API.Shared.RequestFeatures;
+using API.Shared.Validators;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Services;
@@ -10,13 +12,14 @@ namespace API.Services;
 public class ProfessorService
 {
   private readonly ApplicationDbContext _context;
-
+  private readonly IValidator<AddProfessorDto> _validator;
   public ProfessorService(ApplicationDbContext context)
   {
     _context = context;
+    _validator = new AddProfessorValidator();
   }
 
-  public async Task<PagedList<ViewProfessorDto>> GetAllProfessorsAsync(ProfessorParameters professorParameters,
+  public async Task<Result<PagedList<ViewProfessorDto>>> GetAllProfessorsAsync(ProfessorParameters professorParameters,
     CancellationToken token)
   {
     var professors = _context.Professors
@@ -26,52 +29,61 @@ public class ProfessorService
       .Include(p => p.ContactInfo)
       .Include(p => p.Subjects)
       .AsNoTracking();
-    var count = _context.Professors
+    int count = _context.Professors
       .Search(professorParameters.SearchTerm)
       .AsNoTracking()
       .Count();
     var professorDtos = await professors.Select(p => p.ToDto()).ToListAsync(token);
 
-    return new PagedList<ViewProfessorDto>(professorDtos, count, professorParameters.PageNumber,
-      professorParameters.PageSize);
+    return Result<PagedList<ViewProfessorDto>>
+      .Ok(new PagedList<ViewProfessorDto>(professorDtos, count, professorParameters.PageNumber,
+        professorParameters.PageSize));
   }
 
-  public async Task<ViewProfessorDto> GetProfessorAsync(int id, CancellationToken token)
+  public async Task<Result<ViewProfessorDto>> GetProfessorAsync(int id, CancellationToken token)
   {
     var professor = await _context.Professors
       .Include(p => p.ContactInfo)
       .Include(p => p.Subjects)
       .AsNoTracking()
       .SingleOrDefaultAsync(p => p.Id == id, token);
-    if (professor is null) throw new Exception($"Cannot find professor with id: {id}");
-    return professor.ToDto();
+    if (professor is null) return Result<ViewProfessorDto>.NotFound($"Professor with id: {id} not found");
+    return Result<ViewProfessorDto>.Ok(professor.ToDto());
   }
 
-  public async Task<ViewProfessorDto> CreateProfessorAsync(AddProfessorDto dto, CancellationToken token)
+  public async Task<Result<ViewProfessorDto>> CreateProfessorAsync(AddProfessorDto dto, CancellationToken token)
   {
+    var validationResult = _validator.Validate(dto);
+    if (!validationResult.Success)
+    {
+      return Result<ViewProfessorDto>.ValidationFail(validationResult.Errors);
+    }
     var professor = dto.ToEntity();
     await _context.Professors.AddAsync(professor, token);
     await _context.SaveChangesAsync(token);
-    return professor.ToDto();
+    return Result<ViewProfessorDto>.Ok(professor.ToDto());
   }
 
-  public async Task<ViewProfessorDto> UpdateProfessorAsync(int id, UpdateProfessorDto dto, CancellationToken token)
+  public async Task<Result<ViewProfessorDto>> UpdateProfessorAsync(int id, UpdateProfessorDto dto,
+    CancellationToken token)
   {
     var professor = await _context.Professors
       .Include(p => p.ContactInfo)
       .SingleOrDefaultAsync(p => p.Id == id, token);
-    if (professor is null) throw new Exception($"Cannot find professor with id: {id}");
+    if (professor is null) return Result<ViewProfessorDto>.NotFound($"Professor with id: {id} not found");
     dto.ToEntity(professor);
     await _context.SaveChangesAsync(token);
-    return professor.ToDto();
+    return Result<ViewProfessorDto>.Ok(professor.ToDto());
   }
 
-  public async Task DeleteProfessorAsync(int id, CancellationToken token)
+  public async Task<Result<int>> DeleteProfessorAsync(int id, CancellationToken token)
   {
     var professor = await _context.Professors.FindAsync(id, token);
-    if (professor is null) throw new Exception($"Cannot find professor with id: {id}");
+    if (professor is null) return Result<int>.NotFound($"Professor with id: {id} not found");
+    ;
     professor.IsDeleted = true;
     professor.DeletedAt = DateTime.UtcNow;
-    await _context.SaveChangesAsync(token);
+    int affectedRows = await _context.SaveChangesAsync(token);
+    return Result<int>.Ok(affectedRows);
   }
 }

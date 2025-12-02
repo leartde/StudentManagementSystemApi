@@ -11,10 +11,11 @@ public class RedisCacheService
   {
     _cache = cache;
   }
+
   public T? GetData<T>(string key)
   {
-    var data = _cache?.GetString(key);
-    if (data is null) return default(T);
+    string? data = _cache?.GetString(key);
+    if (data is null) return default;
     return JsonSerializer.Deserialize<T>(data);
   }
 
@@ -24,6 +25,6 @@ public class RedisCacheService
     {
       AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(timeSpan)
     };
-    _cache?.SetString(key, JsonSerializer.Serialize(data), options);
+    _cache.SetString(key, JsonSerializer.Serialize(data), options);
   }
 }

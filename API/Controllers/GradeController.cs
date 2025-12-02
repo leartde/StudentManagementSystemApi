@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
-using API.DTOs.GradeDtos;
-using API.RequestFeatures;
 using API.Services;
+using API.Shared.DTOs.GradeDtos;
+using API.Shared.RequestFeatures;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -18,36 +18,30 @@ public class GradeController : ApiController
   [HttpGet]
   public async Task<IActionResult> GetAllGrades([FromQuery] GradeParameters gradeParameters, CancellationToken token)
   {
-    var grades = await _gradeService.GetAllGradesAsync(gradeParameters, token);
-    Response.Headers["X-Pagination"] = JsonSerializer.Serialize(grades.MetaData);
-    return Ok(grades);
-  }
-
-  [HttpGet("{id}")]
-  public async Task<IActionResult> GetGrade(int id, CancellationToken token)
-  {
-    var grade = await _gradeService.GetGradeAsync(id, token);
-    return Ok(grade);
+    var result = await _gradeService.GetAllGradesAsync(gradeParameters, token);
+    Response.Headers["X-Pagination"] = JsonSerializer.Serialize(result.Value.MetaData);
+    return Ok(result);
   }
 
   [HttpPost]
   public async Task<IActionResult> CreateGrade(AddGradeDto gradeDto, CancellationToken token)
   {
-    var grade = await _gradeService.CreateGradeAsync(gradeDto, token);
-    return Ok(grade);
+    var result = await _gradeService.CreateGradeAsync(gradeDto, token);
+    return Ok(result);
   }
 
-  [HttpPut("{id}")]
-  public async Task<IActionResult> UpdateGrade(int id, UpdateGradeDto gradeDto, CancellationToken token)
+  [HttpPut("{studentId}/{subjectId}")]
+  public async Task<IActionResult> UpdateGrade(int studentId, int subjectId, UpdateGradeDto gradeDto,
+    CancellationToken token)
   {
-    var grade = await _gradeService.UpdateGradeAsync(id, gradeDto, token);
-    return Ok(grade);
+    var result = await _gradeService.UpdateGradeAsync(studentId, subjectId, gradeDto, token);
+    return Ok(result);
   }
 
-  [HttpDelete("{id}")]
-  public async Task<IActionResult> DeleteGrade(int id, CancellationToken token)
+  [HttpDelete("{studentId}/{subjectId}")]
+  public async Task<IActionResult> DeleteGrade(int studentId, int subjectId, CancellationToken token)
   {
-    await _gradeService.DeleteGradeAsync(id, token);
-    return Ok($"Grade with id: {id} successfully deleted");
+    await _gradeService.DeleteGradeAsync(studentId, subjectId, token);
+    return Ok($"Grade with student id: {studentId} and subject id: {subjectId} successfully deleted");
   }
 }

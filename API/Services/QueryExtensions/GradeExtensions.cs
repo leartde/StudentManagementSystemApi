@@ -53,7 +53,7 @@ public static class GradeExtensions
         var orderByCall = Expression.Call(
           typeof(Queryable),
           method,
-          new[] { typeof(Student), objectProperty.PropertyType },
+          new[] { typeof(Grade), objectProperty.PropertyType },
           grades.Expression,
           Expression.Quote(orderByExp));
 

@@ -1,91 +1,91 @@
 ﻿using API.Data;
-using API.DTOs.SubjectDtos;
-using API.Mappers;
 using API.Models;
-using API.RequestFeatures;
 using API.Services.QueryExtensions;
+using API.Shared.DTOs.SubjectDtos;
+using API.Shared.Mappers;
+using API.Shared.RequestFeatures;
+using API.Shared.Validators;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace API.Services;
 
 public class SubjectService
 {
-  private readonly ApplicationDbContext _context;
   private readonly RedisCacheService _cache;
+  private readonly ApplicationDbContext _context;
+  private readonly IValidator<AddSubjectDto> _validator;
 
   public SubjectService(ApplicationDbContext context, RedisCacheService cache)
   {
     _context = context;
     _cache = cache;
+    _validator = new AddSubjectValidator();
   }
 
-  public async Task<PagedList<ViewSubjectDto>> GetAllSubjectsAsync(SubjectParameters subjectParameters,
+  public async Task<Result<PagedList<ViewSubjectDto>>> GetAllSubjectsAsync(SubjectParameters subjectParameters,
     CancellationToken token)
   {
-    var cached = _cache.GetData<IEnumerable<Subject>>("subjects");
-    IEnumerable<Subject> subjects;
-    if (cached is not null)
-    {
-      subjects = cached;
-    }
-    else
-    {
-      subjects = await _context.Subjects
-        .Include(s => s.Professor)
-        .AsNoTracking()
-        .ToListAsync(token);
-      _cache.SetData("subjects", subjects, 10);
-    }
-    var filteredSubjects = subjects.AsQueryable()
+    var subjects = _context.Subjects
       .Filter(subjectParameters.ProfessorId, subjectParameters.FieldOfStudy)
       .Search(subjectParameters.SearchTerm)
-      .Sort(subjectParameters.OrderBy);
-    var count = filteredSubjects.Count();
-    var pagedSubjects = filteredSubjects
+      .Sort(subjectParameters.OrderBy)
       .Skip((subjectParameters.PageNumber - 1) * subjectParameters.PageSize)
-      .Take(subjectParameters.PageSize);
-    var subjectDtos = pagedSubjects.Select(s => s.ToDto()).ToList();
-    
-    return new PagedList<ViewSubjectDto>(subjectDtos, count, subjectParameters.PageNumber, subjectParameters.PageSize);
+      .Take(subjectParameters.PageSize)
+      .Include(s => s.Professor)
+      .AsNoTracking();
+
+    int count = _context.Subjects
+      .Include(s => s.Professor)
+      .Filter(subjectParameters.ProfessorId, subjectParameters.FieldOfStudy)
+      .Search(subjectParameters.SearchTerm)
+      .AsNoTracking()
+      .Count();
+    var subjectDtos = await subjects.Select(s => s.ToDto()).ToListAsync(token);
+    return Result<PagedList<ViewSubjectDto>>
+      .Ok(new PagedList<ViewSubjectDto>(subjectDtos, count, subjectParameters.PageNumber, subjectParameters.PageSize));
   }
 
-  public async Task<ViewSubjectDto> GetSubjectAsync(int id, CancellationToken token)
+  public async Task<Result<ViewSubjectDto>> GetSubjectAsync(int id, CancellationToken token)
   {
     var subject = await _context.Subjects
       .AsNoTracking()
       .Include(s => s.Professor)
       .FirstOrDefaultAsync(s => s.Id == id, token);
-    if (subject is null) throw new Exception($"Subject with id: {id} not found.");
+    if (subject is null) return Result<ViewSubjectDto>.NotFound($"Subject with id: {id} not found.");
 
-    return subject.ToDto();
+    return Result<ViewSubjectDto>.Ok(subject.ToDto());
   }
 
-  public async Task<ViewSubjectDto> CreateSubjectAsync(AddSubjectDto dto, CancellationToken token)
+  public async Task<Result<ViewSubjectDto>> CreateSubjectAsync(AddSubjectDto dto, CancellationToken token)
   {
+    var validationResult = _validator.Validate(dto);
+    if (!validationResult.Success)
+    {
+      return Result<ViewSubjectDto>.ValidationFail(validationResult.Errors);
+    }
     var subject = dto.ToEntity();
     await _context.Subjects.AddAsync(subject, token);
     await _context.SaveChangesAsync(token);
-    return subject.ToDto();
+    return Result<ViewSubjectDto>.Ok(subject.ToDto());
   }
 
-  public async Task<ViewSubjectDto> UpdateSubjectAsync(int id, UpdateSubjectDto dto, CancellationToken token)
+  public async Task<Result<ViewSubjectDto>> UpdateSubjectAsync(int id, UpdateSubjectDto dto, CancellationToken token)
   {
     var subject = await _context.Subjects.FindAsync(id, token);
-    if (subject is null) throw new Exception($"Subject with id: {id} not found.");
+    if (subject is null) return Result<ViewSubjectDto>.NotFound($"Subject with id: {id} not found.");
 
     dto.ToEntity(subject);
     await _context.SaveChangesAsync(token);
-    return subject.ToDto();
+    return Result<ViewSubjectDto>.Ok(subject.ToDto());
   }
 
-  public async Task DeleteSubjectAsync(int id, CancellationToken token)
+  public async Task<Result<int>> DeleteSubjectAsync(int id, CancellationToken token)
   {
     var subject = await _context.Subjects.FindAsync(id, token);
-    if (subject is null) throw new Exception($"Subject with id: {id} not found.");
-
+    if (subject is null) return Result<int>.NotFound($"Subject with id: {id} not found.");
     subject.IsDeleted = true;
     subject.DeletedAt = DateTime.UtcNow;
-    await _context.SaveChangesAsync(token);
+    int affectedRows = await _context.SaveChangesAsync(token);
+    return Result<int>.Ok(affectedRows);
   }
 }

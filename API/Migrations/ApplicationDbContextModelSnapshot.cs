@@ -17,7 +17,7 @@ namespace API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0-preview.1.25081.1")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -81,11 +81,11 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.Grade", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("StudentId")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -102,18 +102,15 @@ namespace API.Migrations
                     b.Property<byte>("Mark")
                         .HasColumnType("smallint");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SubjectId")
+                    b.Property<int?>("StudentId1")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id");
+                    b.HasKey("StudentId", "SubjectId");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("StudentId1");
 
                     b.HasIndex("SubjectId");
 
@@ -241,7 +238,7 @@ namespace API.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<short>("ECTS")
+                    b.Property<byte>("ECTS")
                         .HasColumnType("smallint");
 
                     b.Property<int>("FieldOfStudy")
@@ -273,10 +270,14 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.Grade", b =>
                 {
                     b.HasOne("API.Models.Student", "Student")
-                        .WithMany("Grades")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("API.Models.Student", null)
+                        .WithMany("Grades")
+                        .HasForeignKey("StudentId1");
 
                     b.HasOne("API.Models.Subject", "Subject")
                         .WithMany()

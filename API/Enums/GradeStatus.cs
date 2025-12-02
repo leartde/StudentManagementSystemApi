@@ -2,7 +2,7 @@
 
 public enum GradeStatus
 {
-  Pending,
-  Finalized,
-  Declined
+  Pending = 1,
+  Finalized = 2,
+  Declined = 3
 }

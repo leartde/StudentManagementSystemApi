@@ -2,7 +2,7 @@
 
 namespace API.Models;
 
-public class Grade : BaseClass
+public class Grade
 {
   public Student? Student { get; set; }
   public int StudentId { get; set; }
@@ -10,4 +10,8 @@ public class Grade : BaseClass
   public int SubjectId { get; set; }
   public byte Mark { get; set; }
   public GradeStatus GradeStatus { get; set; } = GradeStatus.Pending;
+  public DateTime CreatedAt { get; set; }
+  public DateTime? UpdatedAt { get; set; }
+  public bool IsDeleted { get; set; }
+  public DateTime? DeletedAt { get; set; }
 }
