@@ -24,7 +24,7 @@ public class Student : BaseClass
   public DateOnly DateOfBirth { get; set; }
   public string Birthplace { get; set; } = string.Empty;
   public FieldOfStudy FieldOfStudy { get; set; }
-  public StudentStatus Status { get; set; }
+  public StudentStatus Status { get; set; } = StudentStatus.Active;
   public ContactInfo? ContactInfo { get; set; }
   public int ContactInfoId { get; set; }
   public IEnumerable<Grade>? Grades { get; set; }

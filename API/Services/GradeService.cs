@@ -49,7 +49,7 @@ public class GradeService
       .Include(g => g.Subject)
       .AsNoTracking()
       .SingleOrDefaultAsync(g => g.StudentId == studentId && g.SubjectId == subjectId, token);
-    if (grade is null) return Result<ViewGradeDto>.NotFound("Grade  not found");
+    if (grade is null) return Result<ViewGradeDto>.NotFound("Grade not found");
     return Result<ViewGradeDto>.Ok(grade.ToDto());
   }
 
@@ -70,7 +70,6 @@ public class GradeService
     CancellationToken token)
   {
     var grade = await _context.Grades
-      .AsNoTracking()
       .SingleOrDefaultAsync(g => g.StudentId == studentId && g.SubjectId == subjectId, token);
     if (grade is null) return Result<ViewGradeDto>.NotFound("Grade not found");
     dto.ToEntity(grade);

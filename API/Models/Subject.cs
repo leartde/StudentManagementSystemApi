@@ -11,4 +11,6 @@ public class Subject : BaseClass
   public FieldOfStudy FieldOfStudy { get; set; }
   public Professor? Professor { get; set; }
   public int ProfessorId { get; set; }
+  public IEnumerable<Grade>? Grades { get; set; }
+
 }

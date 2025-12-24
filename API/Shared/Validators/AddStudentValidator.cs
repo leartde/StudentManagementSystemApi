@@ -18,7 +18,7 @@ public class AddStudentValidator : IValidator<AddStudentDto>
     if (!ContainsOnlyLetters(entity.LastName))
     {
       validationResult.Errors.Add("Last name",
-        "cannot be empty and must be a value between 2 and 35 alphabetic characters");
+        "Last name cannot be empty and must be a value between 2 and 35 alphabetic characters");
     }
 
     if (entity.RegistrationYear > DateTime.UtcNow.Year || entity.RegistrationYear < 2010)

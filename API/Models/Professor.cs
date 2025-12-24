@@ -6,5 +6,6 @@ public class Professor : BaseClass
   public string LastName { get; set; } = string.Empty;
   public string Email { get; set; } = string.Empty;
   public ContactInfo? ContactInfo { get; set; }
+  public int ContactInfoId { get; set; }
   public IEnumerable<Subject>? Subjects { get; set; }
 }

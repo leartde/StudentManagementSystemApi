@@ -1,6 +1,28 @@
 ﻿services:
   api:
-    image: api
+    image: student-management-api
     build:
-      context: .
-      dockerfile: API/Dockerfile
+      context: .               
+      dockerfile: API/Dockerfile  
+    networks:
+      - student-network
+
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - student-network
+
+  cache:
+    image: redis:7-alpine
+    networks:
+      - student-network
+    command: redis-server --appendonly yes
+
+volumes:
+  postgres-data:
+
+networks:
+  student-network:
+    driver: bridge

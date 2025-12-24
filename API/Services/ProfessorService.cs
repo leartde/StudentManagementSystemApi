@@ -80,7 +80,6 @@ public class ProfessorService
   {
     var professor = await _context.Professors.FindAsync(id, token);
     if (professor is null) return Result<int>.NotFound($"Professor with id: {id} not found");
-    ;
     professor.IsDeleted = true;
     professor.DeletedAt = DateTime.UtcNow;
     int affectedRows = await _context.SaveChangesAsync(token);

@@ -1,4 +1,5 @@
-﻿using API.Data;
+using System.Threading.RateLimiting;
+using API.Data;
 using API.Services;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ public static class ServiceCollectionExtensions
       {
         Title = "Student Management API",
         Version = "v1",
-        Description = "API for managing students, grades, and schedules"
+        Description = "API for managing students and grades"
       });
     });
   }
@@ -54,5 +55,22 @@ public static class ServiceCollectionExtensions
       options.InstanceName = "StudentSystemCaching_";
     });
     services.AddMemoryCache(options => { options.SizeLimit = 1024 * 1024 * 100; });
+  }
+
+  public static void AddRateLimiting(this IServiceCollection services)
+  {
+    services.AddRateLimiter(options =>
+    {
+      options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+          partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+          factory: partition => new FixedWindowRateLimiterOptions
+          {
+            AutoReplenishment = true,
+            PermitLimit = 10,
+            QueueLimit = 0,
+            Window = TimeSpan.FromMinutes(1)
+          }));
+    });
   }
 }

@@ -1,4 +1,5 @@
-﻿using API.Models;
+﻿using API.Data.Seeders;
+using API.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
@@ -34,14 +35,23 @@ public class ApplicationDbContext : DbContext
 
     modelBuilder.Entity<Grade>()
       .HasOne(g => g.Student)
-      .WithMany()
+      .WithMany(s => s.Grades)
       .HasForeignKey(g => g.StudentId)
       .OnDelete(DeleteBehavior.Cascade);
 
     modelBuilder.Entity<Grade>()
       .HasOne(g => g.Subject)
-      .WithMany()
+      .WithMany(s => s.Grades)
       .HasForeignKey(g => g.SubjectId)
       .OnDelete(DeleteBehavior.Cascade);
+    // modelBuilder.ApplyConfiguration(new SeedContactInfoData());
+    // modelBuilder.ApplyConfiguration(new SeedStudentData());
+    // modelBuilder.ApplyConfiguration(new SeedProfessorData());
+    // modelBuilder.ApplyConfiguration(new SeedSubjectData());
+    // modelBuilder.ApplyConfiguration(new SeedGradeData());  
+  }
+  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+  {
+    optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
   }
 }

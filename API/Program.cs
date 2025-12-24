@@ -7,6 +7,7 @@ builder.Services.AddApiVersioningConfig();
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddDatabaseContext(builder.Configuration);
 builder.Services.ConfigureRedis(builder.Configuration);
+builder.Services.AddRateLimiting();
 builder.Services.AddServices();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

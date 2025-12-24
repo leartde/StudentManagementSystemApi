@@ -29,7 +29,7 @@ public class AddContactInfoValidator : IValidator<AddContactInfoDto>
     if (string.IsNullOrEmpty(entity.ZipCode) || entity.ZipCode.Length != 5 ||
         entity.ZipCode.Any(c => !char.IsNumber(c)))
     {
-      validationResult.Errors.Add("ZipCode", "Zip code cannot be empty and must be a value of 5 numerical characters.");
+      validationResult.Errors.Add("Zip code", "Zip code cannot be empty and must be a value of 5 numerical characters.");
     }
 
     if (string.IsNullOrEmpty(entity.PhoneNumber) || entity.PhoneNumber.Length < 7 ||
@@ -41,7 +41,7 @@ public class AddContactInfoValidator : IValidator<AddContactInfoDto>
 
       if (string.IsNullOrEmpty(entity.PrivateEmail))
       {
-        validationResult.Errors.Add("PrivateEmail", "Email cannot be empty");
+        validationResult.Errors.Add("Private Email", "Email cannot be empty");
       }
 
       if (!ContainsOnlyLetters(entity.Ethnicity))

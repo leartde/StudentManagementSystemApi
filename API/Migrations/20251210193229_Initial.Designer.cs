@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251128144002_Initial")]
+    [Migration("20251210193229_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -105,15 +105,10 @@ namespace API.Migrations
                     b.Property<byte>("Mark")
                         .HasColumnType("smallint");
 
-                    b.Property<int?>("StudentId1")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("StudentId", "SubjectId");
-
-                    b.HasIndex("StudentId1");
 
                     b.HasIndex("SubjectId");
 
@@ -128,7 +123,7 @@ namespace API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ContactInfoId")
+                    b.Property<int>("ContactInfoId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
@@ -273,17 +268,13 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.Grade", b =>
                 {
                     b.HasOne("API.Models.Student", "Student")
-                        .WithMany()
+                        .WithMany("Grades")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Models.Student", null)
-                        .WithMany("Grades")
-                        .HasForeignKey("StudentId1");
-
                     b.HasOne("API.Models.Subject", "Subject")
-                        .WithMany()
+                        .WithMany("Grades")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -297,7 +288,9 @@ namespace API.Migrations
                 {
                     b.HasOne("API.Models.ContactInfo", "ContactInfo")
                         .WithMany()
-                        .HasForeignKey("ContactInfoId");
+                        .HasForeignKey("ContactInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ContactInfo");
                 });
@@ -330,6 +323,11 @@ namespace API.Migrations
                 });
 
             modelBuilder.Entity("API.Models.Student", b =>
+                {
+                    b.Navigation("Grades");
+                });
+
+            modelBuilder.Entity("API.Models.Subject", b =>
                 {
                     b.Navigation("Grades");
                 });

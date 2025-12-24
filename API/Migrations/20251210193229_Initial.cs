@@ -45,7 +45,7 @@ namespace API.Migrations
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    ContactInfoId = table.Column<int>(type: "integer", nullable: true),
+                    ContactInfoId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
@@ -58,7 +58,8 @@ namespace API.Migrations
                         name: "FK_Professors_ContactInfos_ContactInfoId",
                         column: x => x.ContactInfoId,
                         principalTable: "ContactInfos",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -132,8 +133,7 @@ namespace API.Migrations
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    StudentId1 = table.Column<int>(type: "integer", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -145,22 +145,12 @@ namespace API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Grades_Students_StudentId1",
-                        column: x => x.StudentId1,
-                        principalTable: "Students",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Grades_Subjects_SubjectId",
                         column: x => x.SubjectId,
                         principalTable: "Subjects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Grades_StudentId1",
-                table: "Grades",
-                column: "StudentId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Grades_SubjectId",
