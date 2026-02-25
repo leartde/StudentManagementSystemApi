@@ -15,6 +15,7 @@ public static class StudentMapper
       LastName = entity.LastName,
       RegistrationYear = entity.RegistrationYear,
       Email = entity.Email,
+      AverageGrade = entity.AverageGrade,
       Gender = entity.Gender,
       DateOfBirth = entity.DateOfBirth,
       Birthplace = entity.Birthplace,
@@ -23,7 +24,6 @@ public static class StudentMapper
       ContactInfo = entity.ContactInfo?.ToDto(),
       CreatedAt = entity.CreatedAt,
       UpdatedAt = entity.UpdatedAt,
-      DeletedAt = entity.DeletedAt
     };
   }
 

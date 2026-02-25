@@ -7,26 +7,32 @@ namespace API.Data.Seeders;
 
 public class SeedSubjectData : IEntityTypeConfiguration<Subject>
 {
-  public static readonly List<Subject> Subjects = new();
-  private static readonly string[] _commonSubjects = ["Criminal Law", "Data Structures and Algorithms",
-  "Chemistry", "Anatomy", "Design", "Social Psychology", "Thermodynamics"];
+  private static readonly DateTime SeedCreatedAt = new(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
   public void Configure(EntityTypeBuilder<Subject> builder)
   {
-    for (int i = 0; i < 7; i++)
-    {
-      var name = _commonSubjects[i];
-      Subjects.Add(new Subject
+    builder.HasData(
+      new Subject
       {
-        Id = i + 1,
-        Title = name,
-        Code = name.ToUpper()[..3] + "101",
+        Id = 1,
+        Title = "Data Structures and Algorithms",
+        Code = "DSA101",
         ECTS = 4,
         IsObligatory = true,
-        FieldOfStudy = (FieldOfStudy)(i + 1),
-        ProfessorId = SeedProfessorData.Professors[i].Id,
+        FieldOfStudy = FieldOfStudy.ComputerScience,
+        ProfessorId = 1,
+        CreatedAt = SeedCreatedAt
+      },
+      new Subject
+      {
+        Id = 2,
+        Title = "Criminal Law",
+        Code = "LAW101",
+        ECTS = 5,
+        IsObligatory = true,
+        FieldOfStudy = FieldOfStudy.Law,
+        ProfessorId = 2,
+        CreatedAt = SeedCreatedAt
       });
-    }
-
-    builder.HasData(Subjects);
   }
 }

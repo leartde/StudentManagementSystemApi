@@ -60,6 +60,24 @@ public class GradeService
     {
       return Result<ViewGradeDto>.ValidationFail(validationResult.Errors);
     }
+
+    var student = await _context.Students.FindAsync(dto.StudentId, token);
+    if (student is null)
+    {
+      return Result<ViewGradeDto>.Conflict($"Student with id: {dto.StudentId} not found.");
+    }
+
+    var subject = await _context.Subjects.FindAsync(dto.SubjectId, token);
+    if (subject is null)
+    {
+      return Result<ViewGradeDto>.Conflict($"Subject with id: {dto.SubjectId} not found.");
+    }
+    var existingGrade =
+      await _context.Grades.SingleOrDefaultAsync(g => g.SubjectId == dto.SubjectId && g.StudentId == dto.StudentId, cancellationToken: token);
+    if (existingGrade != null)
+    {
+      return Result<ViewGradeDto>.Conflict($"Student with id: {dto.StudentId} already has a grade for subject with id: {dto.SubjectId}");
+    }
     var grade = dto.ToEntity();
     await _context.Grades.AddAsync(grade, token);
     await _context.SaveChangesAsync(token);
@@ -83,8 +101,7 @@ public class GradeService
       .AsNoTracking()
       .SingleOrDefaultAsync(g => g.StudentId == studentId && g.SubjectId == subjectId, token);
     if (grade is null) return Result<int>.NotFound("Grade not found");
-    grade.IsDeleted = true;
-    grade.DeletedAt = DateTime.UtcNow;
+    _context.Grades.Remove(grade);
     int affectedRows = await _context.SaveChangesAsync(token);
     return Result<int>.Ok(affectedRows);
   }

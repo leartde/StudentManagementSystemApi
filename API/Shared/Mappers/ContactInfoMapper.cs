@@ -20,7 +20,6 @@ public static class ContactInfoMapper
       Nationality = entity.Nationality,
       CreatedAt = entity.CreatedAt,
       UpdatedAt = entity.UpdatedAt,
-      DeletedAt = entity.DeletedAt
     };
   }
 

@@ -11,14 +11,14 @@ public class Result<T>
   {
     Success = success;
     Value = value;
-    Errors = errors;
+    ValidationErrors = errors;
     ErrorMessage = errorMessage;
     ErrorType = errorType.ToString();
   }
 
   public bool Success { get; }
   public T Value { get; }
-  public Dictionary<string, string>? Errors { get; }
+  public Dictionary<string, string>? ValidationErrors { get; }
   public string? ErrorMessage { get; }
   public string? ErrorType { get; }
 
@@ -27,9 +27,9 @@ public class Result<T>
     return new Result<T>(true, value);
   }
 
-  public static Result<T> ValidationFail(Dictionary<string, string> errors)
+  public static Result<T> ValidationFail(Dictionary<string, string> validationErrors)
   {
-    return new Result<T>(false, default!, errors, null, Enums.ErrorType.Validation);
+    return new Result<T>(false, default!, validationErrors, "One or more validation errors have occurred", Enums.ErrorType.Validation);
   }
 
   public static Result<T> Fail(string errorMessage, ErrorType errorType)
@@ -38,7 +38,7 @@ public class Result<T>
   }
 
   public static Result<T> NotFound(string message = "Resource not found")
-  {
+  { 
     return Fail(message, Enums.ErrorType.NotFound);
   }
 

@@ -11,36 +11,36 @@ public class AddStudentValidator : IValidator<AddStudentDto>
     var validationResult = new ValidationResult();
     if (!ContainsOnlyLetters(entity.FirstName))
     {
-      validationResult.Errors.Add("First name",
+      validationResult.Errors.Add("firstName",
         "First name cannot be empty and must be a value between 2 and 35 alphabetic characters");
     }
 
     if (!ContainsOnlyLetters(entity.LastName))
     {
-      validationResult.Errors.Add("Last name",
+      validationResult.Errors.Add("lastName",
         "Last name cannot be empty and must be a value between 2 and 35 alphabetic characters");
     }
 
     if (entity.RegistrationYear > DateTime.UtcNow.Year || entity.RegistrationYear < 2010)
     {
-      validationResult.Errors.Add("Registration year",
+      validationResult.Errors.Add("registrationYear",
         $"Registration year must be a value between 2010 and {DateTime.UtcNow.Year}.");
     }
 
     if (entity.Gender is not (Gender.Male or Gender.Female))
     {
-      validationResult.Errors.Add("Gender", "Gender must be a value between 1 (Male) or 2 (Female).");
+      validationResult.Errors.Add("gender", "Gender must be a value between 1 (Male) or 2 (Female).");
     }
 
     if (!ContainsOnlyLetters(entity.Birthplace))
     {
-      validationResult.Errors.Add("Birthplace",
+      validationResult.Errors.Add("birthplace",
         "Birthplace cannot be empty and must be a value between 2 and 35 alphabetic characters");
     }
 
     if ((int)entity.FieldOfStudy is > 7 or < 1)
     {
-      validationResult.Errors.Add("Field of study",
+      validationResult.Errors.Add("fieldOfStudy",
         "Field of study must be a value between 1 or 7.");
     }
     
@@ -54,7 +54,7 @@ public class AddStudentValidator : IValidator<AddStudentDto>
     }
     else
     {
-      validationResult.Errors.Add("Contact info",
+      validationResult.Errors.Add("contactInfo",
         "Contact info cannot be null");
     }
     

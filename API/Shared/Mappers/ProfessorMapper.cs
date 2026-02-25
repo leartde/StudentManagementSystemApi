@@ -17,7 +17,6 @@ public static class ProfessorMapper
       Subjects = entity.Subjects?.Select(s => s.ToDto()),
       CreatedAt = entity.CreatedAt,
       UpdatedAt = entity.UpdatedAt,
-      DeletedAt = entity.DeletedAt
     };
   }
 

@@ -24,8 +24,6 @@ public class ApplicationDbContext : DbContext
       .HasQueryFilter(s => !s.IsDeleted);
     modelBuilder.Entity<Professor>()
       .HasQueryFilter(p => !p.IsDeleted);
-    modelBuilder.Entity<Grade>()
-      .HasQueryFilter(g => !g.IsDeleted);
     modelBuilder.Entity<ContactInfo>()
       .HasQueryFilter(c => !c.IsDeleted);
 
@@ -44,11 +42,11 @@ public class ApplicationDbContext : DbContext
       .WithMany(s => s.Grades)
       .HasForeignKey(g => g.SubjectId)
       .OnDelete(DeleteBehavior.Cascade);
-    // modelBuilder.ApplyConfiguration(new SeedContactInfoData());
-    // modelBuilder.ApplyConfiguration(new SeedStudentData());
-    // modelBuilder.ApplyConfiguration(new SeedProfessorData());
-    // modelBuilder.ApplyConfiguration(new SeedSubjectData());
-    // modelBuilder.ApplyConfiguration(new SeedGradeData());  
+    modelBuilder.ApplyConfiguration(new SeedContactInfoData());
+    modelBuilder.ApplyConfiguration(new SeedStudentData());
+    modelBuilder.ApplyConfiguration(new SeedProfessorData());
+    modelBuilder.ApplyConfiguration(new SeedSubjectData());
+    modelBuilder.ApplyConfiguration(new SeedGradeData());  
   }
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {

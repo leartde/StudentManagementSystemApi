@@ -1,4 +1,5 @@
-﻿using API.Enums;
+﻿using System.Collections.ObjectModel;
+using API.Enums;
 
 namespace API.Models;
 
@@ -28,4 +29,9 @@ public class Student : BaseClass
   public ContactInfo? ContactInfo { get; set; }
   public int ContactInfoId { get; set; }
   public IEnumerable<Grade>? Grades { get; set; }
+  public double AverageGrade =>
+    Grades != null && Grades.Any()
+      ? Grades.Average(g => (double)g.Mark)
+      : 0;
+
 }

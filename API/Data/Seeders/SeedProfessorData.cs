@@ -6,21 +6,28 @@ namespace API.Data.Seeders;
 
 public class SeedProfessorData : IEntityTypeConfiguration<Professor>
 {
-  public static readonly List<Professor> Professors = new();
+  private static readonly DateTime SeedCreatedAt = new(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
   public void Configure(EntityTypeBuilder<Professor> builder)
   {
-    for (int i = 0; i < 40; i++)
-    {
-      Professors.Add(new Professor
+    builder.HasData(
+      new Professor
       {
-        Id = i + 1,
-        FirstName = Faker.Name.FirstName(),
-        LastName = Faker.Name.LastName(),
-        Email = "professor@example.com",
-        ContactInfoId = 1
+        Id = 1,
+        FirstName = "Ardit",
+        LastName = "Musa",
+        Email = "ardit.musa@ubt-uni.net",
+        ContactInfoId = 1,
+        CreatedAt = SeedCreatedAt
+      },
+      new Professor
+      {
+        Id = 2,
+        FirstName = "Sara",
+        LastName = "Shala",
+        Email = "sara.shala@ubt-uni.net",
+        ContactInfoId = 2,
+        CreatedAt = SeedCreatedAt
       });
-    }
-
-    builder.HasData(Professors);
   }
 }

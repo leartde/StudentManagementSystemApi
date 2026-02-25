@@ -15,7 +15,6 @@ public static class GradeMapper
       GradeStatus = entity.GradeStatus.ToString(),
       CreatedAt = entity.CreatedAt,
       UpdatedAt = entity.UpdatedAt,
-      DeletedAt = entity.DeletedAt
     };
   }
 

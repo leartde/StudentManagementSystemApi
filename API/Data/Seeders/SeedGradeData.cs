@@ -6,19 +6,24 @@ namespace API.Data.Seeders;
 
 public class SeedGradeData : IEntityTypeConfiguration<Grade>
 {
-  public static readonly List<Grade> Grades = [];
+  private static readonly DateTime SeedCreatedAt = new(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
   public void Configure(EntityTypeBuilder<Grade> builder)
   {
-    for (int i = 0; i < 100; i++)
-    {
-      Grades.Add(new Grade
+    builder.HasData(
+      new Grade
       {
-        StudentId = SeedStudentData.Students[i].Id,
-        SubjectId = SeedSubjectData.Subjects[i % 7].Id,
-        Mark = (byte)(i % 5 + 6)
+        StudentId = 1,
+        SubjectId = 1,
+        Mark = 10,
+        CreatedAt = SeedCreatedAt
+      },
+      new Grade
+      {
+        StudentId = 2,
+        SubjectId = 2,
+        Mark = 9,
+        CreatedAt = SeedCreatedAt
       });
-    }
-
-    builder.HasData(Grades);
   }
 }

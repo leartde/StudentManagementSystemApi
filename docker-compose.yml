@@ -1,6 +1,5 @@
 ﻿services:
   api:
-    image: student-management-api
     build:
       context: .               
       dockerfile: API/Dockerfile  

@@ -63,6 +63,13 @@ public class SubjectService
     {
       return Result<ViewSubjectDto>.ValidationFail(validationResult.Errors);
     }
+
+    var professor = await _context.Professors.FindAsync(dto.ProfessorId);
+    if (professor is null)
+    {
+      return Result<ViewSubjectDto>
+        .Conflict($"Foreign key conflict. Professor with id: {dto.ProfessorId} not found.");
+    }
     var subject = dto.ToEntity();
     await _context.Subjects.AddAsync(subject, token);
     await _context.SaveChangesAsync(token);

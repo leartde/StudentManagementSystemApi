@@ -19,7 +19,6 @@ public static class SubjectMapper
       ProfessorName = entity.Professor?.FirstName + " " + entity.Professor?.LastName,
       CreatedAt = entity.CreatedAt,
       UpdatedAt = entity.UpdatedAt,
-      DeletedAt = entity.DeletedAt
     };
   }
 

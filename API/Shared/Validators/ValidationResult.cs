@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace API.Shared.Validators;
+﻿namespace API.Shared.Validators;
 
 public class ValidationResult
 {

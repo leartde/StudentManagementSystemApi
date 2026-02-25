@@ -11,6 +11,7 @@ public class ViewStudentDto
   public string LastName { get; set; } = string.Empty;
   public int RegistrationYear { get; set; }
   public string Email { get; set; } = string.Empty;
+  public double AverageGrade { get; set; }
   public Gender Gender { get; set; }
   public DateOnly DateOfBirth { get; set; }
   public string Birthplace { get; set; } = string.Empty;
@@ -19,5 +20,4 @@ public class ViewStudentDto
   public ViewContactInfoDto? ContactInfo { get; set; }
   public DateTime CreatedAt { get; set; }
   public DateTime? UpdatedAt { get; set; }
-  public DateTime? DeletedAt { get; set; }
 }

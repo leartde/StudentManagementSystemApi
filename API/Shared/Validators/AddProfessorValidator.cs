@@ -10,19 +10,19 @@ public class AddProfessorValidator : IValidator<AddProfessorDto>
     var validationResult = new ValidationResult();
     if (!ContainsOnlyLetters(entity.FirstName))
     {
-      validationResult.Errors.Add("First name",
+      validationResult.Errors.Add("firstName",
         "First name cannot be empty and must be a value between 2 and 35 alphabetic characters");
     }
 
     if (!ContainsOnlyLetters(entity.LastName))
     {
-      validationResult.Errors.Add("Last name",
+      validationResult.Errors.Add("lastName",
         "Last name cannot be empty and must be a value between 2 and 35 alphabetic characters");
     }
 
     if (string.IsNullOrEmpty(entity.Email))
     {
-      validationResult.Errors.Add("Private Email", "Email cannot be empty");
+      validationResult.Errors.Add("privateEmail", "Private email cannot be empty");
     }
 
     return validationResult;

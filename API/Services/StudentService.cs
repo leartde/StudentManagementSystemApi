@@ -33,8 +33,10 @@ public class StudentService
 
     var students = _context.Students
       .Include(s => s.ContactInfo)
+      .Include(s => s.Grades)
       .Filter(studentParameters.MinAverageGrade, studentParameters.FieldOfStudy)
       .Search(studentParameters.SearchTerm)
+      .Sort(studentParameters.OrderBy)
       .Skip((studentParameters.PageNumber - 1) * studentParameters.PageSize)
       .Take(studentParameters.PageSize)
       .AsNoTracking();
@@ -55,6 +57,7 @@ public class StudentService
   {
     var student = await _context.Students
       .Include(s => s.ContactInfo)
+      .Include(s => s.Grades)
       .AsNoTracking()
       .SingleOrDefaultAsync(s => s.Id == id, token);
     if (student is null) return Result<ViewStudentDto>.NotFound($"Couldn't find student with id: {id}");
